@@ -1,0 +1,70 @@
+<div class="encabezado-pagina">
+  <h1>Mi perfil</h1>
+</div>
+
+<section class="tarjeta">
+  @if (auth.usuario(); as u) {
+    <p class="texto-suave">
+      {{ u.correo_electronico }} · Rol: {{ u.rol }} · Miembro desde {{ u.fecha_registro | date: 'dd/MM/yyyy' }}
+    </p>
+  }
+
+  @if (exito()) { <div class="alerta alerta-exito">{{ exito() }}</div> }
+  @if (error()) { <div class="alerta alerta-error">{{ error() }}</div> }
+
+  <form [formGroup]="form" (ngSubmit)="guardar()" novalidate>
+    <div class="campo">
+      <label for="nombre">Nombre completo</label>
+      <input id="nombre" type="text" formControlName="nombre_completo"
+             [class.invalido]="invalido('nombre_completo')">
+      @if (invalido('nombre_completo')) {
+        <span class="campo-error">El nombre es obligatorio (máximo 100 caracteres)</span>
+      }
+    </div>
+
+    <div class="dos-col">
+      <div class="campo">
+        <label for="telefono">Teléfono</label>
+        <input id="telefono" type="tel" formControlName="telefono"
+               [class.invalido]="invalido('telefono')">
+        @if (invalido('telefono')) {
+          <span class="campo-error">Máximo 20 caracteres</span>
+        }
+      </div>
+
+      <div class="campo">
+        <label for="direccion">Dirección</label>
+        <input id="direccion" type="text" formControlName="direccion">
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primario" [disabled]="guardando()">
+      {{ guardando() ? 'Guardando...' : 'Guardar cambios' }}
+    </button>
+  </form>
+</section>
+
+<section class="tarjeta seccion">
+  <h2>Desactivar cuenta</h2>
+  <p class="texto-suave">
+    Al desactivar tu cuenta se cerrará tu sesión y ya no podrás ingresar con este correo.
+  </p>
+
+  @if (errorCuenta()) { <div class="alerta alerta-error">{{ errorCuenta() }}</div> }
+
+  @if (!confirmando()) {
+    <button type="button" class="btn btn-peligro-suave" (click)="confirmando.set(true)">
+      Desactivar mi cuenta
+    </button>
+  } @else {
+    <div class="alerta alerta-aviso">¿Seguro que quieres desactivar tu cuenta?</div>
+    <div class="fila-acciones">
+      <button type="button" class="btn btn-peligro" [disabled]="desactivando()" (click)="desactivar()">
+        {{ desactivando() ? 'Desactivando...' : 'Sí, desactivar' }}
+      </button>
+      <button type="button" class="btn btn-secundario" [disabled]="desactivando()" (click)="confirmando.set(false)">
+        Cancelar
+      </button>
+    </div>
+  }
+</section>

@@ -1,0 +1,55 @@
+<a routerLink="/mascotas" class="migas">← Volver a mis mascotas</a>
+
+@if (error()) { <div class="alerta alerta-error">{{ error() }}</div> }
+
+@if (cargando()) {
+  <p class="cargando">Cargando...</p>
+} @else if (mascota(); as m) {
+  <section class="tarjeta">
+    <div class="encabezado-pagina">
+      <div class="mascota-cab">
+        <div class="avatar avatar-grande">
+          @if (m.foto_url) {
+            <img [src]="m.foto_url" [alt]="m.nombre">
+          } @else {
+            {{ emojiEspecie(m.especie) }}
+          }
+        </div>
+        <div>
+          <h1>{{ m.nombre }}</h1>
+          <span class="texto-suave">{{ m.especie }}@if (m.raza) { · {{ m.raza }} }</span>
+        </div>
+      </div>
+
+      <div class="fila-acciones">
+        <a [routerLink]="['/citas/nueva']" [queryParams]="{ mascota: m.id_mascota }" class="btn btn-primario btn-chico">Agendar cita</a>
+        <a [routerLink]="['/mascotas', m.id_mascota, 'editar']" class="btn btn-secundario btn-chico">Editar</a>
+        <button type="button" class="btn btn-peligro-suave btn-chico" (click)="eliminar()">Eliminar</button>
+      </div>
+    </div>
+
+    <dl class="datos">
+      <div><dt>Edad</dt><dd>{{ edadTexto(m.fecha_nacimiento) }}</dd></div>
+      <div><dt>Nacimiento</dt><dd>{{ m.fecha_nacimiento ? (m.fecha_nacimiento | date: 'dd/MM/yyyy') : '—' }}</dd></div>
+      <div><dt>Sexo</dt><dd>{{ m.sexo ?? '—' }}</dd></div>
+      <div><dt>Peso</dt><dd>{{ m.peso_kg !== null ? m.peso_kg + ' kg' : '—' }}</dd></div>
+      <div><dt>Color</dt><dd>{{ m.color ?? '—' }}</dd></div>
+      <div><dt>Esterilizado</dt><dd>{{ m.esterilizado ? 'Sí' : 'No' }}</dd></div>
+    </dl>
+  </section>
+
+  <section class="tarjeta seccion">
+    <div class="pestanas">
+      <button type="button" class="pestana" [class.activa]="pestana() === 'historial'"
+              (click)="pestana.set('historial')">Historial médico</button>
+      <button type="button" class="pestana" [class.activa]="pestana() === 'vacunas'"
+              (click)="pestana.set('vacunas')">Vacunas</button>
+    </div>
+
+    @if (pestana() === 'historial') {
+      <app-historial-panel [idMascota]="m.id_mascota" />
+    } @else {
+      <app-vacunas-panel [idMascota]="m.id_mascota" />
+    }
+  </section>
+}

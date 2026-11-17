@@ -1,0 +1,44 @@
+<div class="encabezado-pagina">
+  <h1>Mis mascotas</h1>
+  <a routerLink="/mascotas/nueva" class="btn btn-primario">+ Agregar mascota</a>
+</div>
+
+@if (error()) {
+  <div class="alerta alerta-error">{{ error() }}</div>
+}
+
+@if (cargando()) {
+  <p class="cargando">Cargando...</p>
+} @else if (mascotas().length === 0) {
+  <div class="tarjeta vacio">
+    <p>Aún no has registrado mascotas.</p>
+    <a routerLink="/mascotas/nueva" class="btn btn-primario">Registrar la primera</a>
+  </div>
+} @else {
+  <div class="rejilla">
+    @for (m of mascotas(); track m.id_mascota) {
+      <article class="tarjeta">
+        <div class="mascota-cab">
+          <div class="avatar">
+            @if (m.foto_url) {
+              <img [src]="m.foto_url" [alt]="m.nombre">
+            } @else {
+              {{ emojiEspecie(m.especie) }}
+            }
+          </div>
+          <div>
+            <h3>{{ m.nombre }}</h3>
+            <span class="texto-suave">{{ m.especie }}@if (m.raza) { · {{ m.raza }} }</span><br>
+            <span class="texto-suave">{{ edadTexto(m.fecha_nacimiento) }}</span>
+          </div>
+        </div>
+
+        <div class="fila-acciones">
+          <a [routerLink]="['/mascotas', m.id_mascota]" class="btn btn-primario btn-chico">Ver ficha</a>
+          <a [routerLink]="['/mascotas', m.id_mascota, 'editar']" class="btn btn-secundario btn-chico">Editar</a>
+          <button type="button" class="btn btn-peligro-suave btn-chico" (click)="eliminar(m)">Eliminar</button>
+        </div>
+      </article>
+    }
+  </div>
+}

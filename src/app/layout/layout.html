@@ -1,0 +1,22 @@
+<header class="navbar">
+  <div class="navbar-in">
+    <a routerLink="/inicio" class="marca">🐾 PeludOS</a>
+
+    <nav class="menu">
+      <a routerLink="/inicio" routerLinkActive="activo">Inicio</a>
+      <a routerLink="/mascotas" routerLinkActive="activo">Mis mascotas</a>
+      <a routerLink="/citas" routerLinkActive="activo">Citas</a>
+      <a routerLink="/clinicas" routerLinkActive="activo">Clínicas</a>
+      <a routerLink="/perfil" routerLinkActive="activo">Mi perfil</a>
+    </nav>
+
+    <div class="navbar-user">
+      <span>{{ auth.usuario()?.nombre_completo }}</span>
+      <button type="button" class="btn btn-secundario btn-chico" (click)="auth.cerrarSesion()">Salir</button>
+    </div>
+  </div>
+</header>
+
+<main class="contenedor">
+  <router-outlet />
+</main>

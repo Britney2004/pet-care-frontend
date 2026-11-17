@@ -1,0 +1,66 @@
+<h1>Hola, {{ auth.usuario()?.nombre_completo }} 👋</h1>
+<p class="texto-suave">Este es el resumen del cuidado de tus mascotas.</p>
+
+@if (error()) {
+  <div class="alerta alerta-error">{{ error() }}</div>
+}
+
+@if (cargando()) {
+  <p class="cargando">Cargando...</p>
+} @else {
+  <div class="resumen">
+    <div class="tarjeta cifra">
+      <strong>{{ mascotas().length }}</strong>
+      <span class="texto-suave">Mascotas</span>
+    </div>
+    <div class="tarjeta cifra">
+      <strong>{{ proximasCitas().length }}</strong>
+      <span class="texto-suave">Citas próximas</span>
+    </div>
+    <div class="tarjeta cifra">
+      <strong>{{ vacunas().length }}</strong>
+      <span class="texto-suave">Refuerzos en 30 días</span>
+    </div>
+  </div>
+
+  <div class="rejilla" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr))">
+    <section class="tarjeta">
+      <div class="encabezado-pagina">
+        <h2>Próximas citas</h2>
+        <a routerLink="/citas/nueva" class="btn btn-primario btn-chico">Agendar</a>
+      </div>
+
+      @for (c of proximasCitas(); track c.id_cita) {
+        <div class="item-lista">
+          <div class="item-cab">
+            <strong>{{ nombreMascota(c.id_mascota) }}</strong>
+            <span class="badge badge-{{ c.estado }}">{{ c.estado }}</span>
+          </div>
+          <p>{{ c.fecha_hora | date: 'dd/MM/yyyy HH:mm' }}</p>
+          @if (c.motivo) { <p class="texto-suave">{{ c.motivo }}</p> }
+        </div>
+      } @empty {
+        <p class="vacio">No tienes citas próximas.</p>
+      }
+    </section>
+
+    <section class="tarjeta">
+      <div class="encabezado-pagina">
+        <h2>Vacunas por vencer</h2>
+        <a routerLink="/mascotas" class="btn btn-secundario btn-chico">Mis mascotas</a>
+      </div>
+
+      @for (v of vacunas(); track v.id_vacuna) {
+        <div class="item-lista">
+          <div class="item-cab">
+            <strong>{{ v.nombre_vacuna }}</strong>
+            <span class="badge badge-pendiente">{{ v.fecha_proxima_dosis | date: 'dd/MM/yyyy' }}</span>
+          </div>
+          <p class="texto-suave">{{ nombreMascota(v.id_mascota) }}</p>
+        </div>
+      } @empty {
+        <p class="vacio">No hay refuerzos pendientes en los próximos 30 días.</p>
+      }
+    </section>
+  </div>
+}

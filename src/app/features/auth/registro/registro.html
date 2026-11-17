@@ -1,0 +1,77 @@
+<main class="auth-pagina">
+  <section class="tarjeta auth-tarjeta auth-tarjeta-ancha">
+    <div class="auth-marca">
+      <span class="auth-logo">🐾</span>
+      <h1>Crea tu cuenta</h1>
+      <p>Registra a tus mascotas y agenda sus citas</p>
+    </div>
+
+    @if (error()) {
+      <div class="alerta alerta-error">{{ error() }}</div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="enviar()" novalidate>
+      <div class="campo">
+        <label for="nombre">Nombre completo</label>
+        <input id="nombre" type="text" formControlName="nombre_completo"
+               autocomplete="name" [class.invalido]="invalido('nombre_completo')">
+        @if (invalido('nombre_completo')) {
+          <span class="campo-error">El nombre es obligatorio (máximo 100 caracteres)</span>
+        }
+      </div>
+
+      <div class="campo">
+        <label for="correo">Correo electrónico</label>
+        <input id="correo" type="email" formControlName="correo_electronico"
+               autocomplete="email" [class.invalido]="invalido('correo_electronico')">
+        @if (invalido('correo_electronico')) {
+          <span class="campo-error">Ingresa un correo válido</span>
+        }
+      </div>
+
+      <div class="dos-col">
+        <div class="campo">
+          <label for="telefono">Teléfono (opcional)</label>
+          <input id="telefono" type="tel" formControlName="telefono"
+                 autocomplete="tel" [class.invalido]="invalido('telefono')">
+          @if (invalido('telefono')) {
+            <span class="campo-error">Máximo 20 caracteres</span>
+          }
+        </div>
+
+        <div class="campo">
+          <label for="direccion">Dirección (opcional)</label>
+          <input id="direccion" type="text" formControlName="direccion"
+                 autocomplete="street-address">
+        </div>
+      </div>
+
+      <div class="dos-col">
+        <div class="campo">
+          <label for="contrasena">Contraseña</label>
+          <input id="contrasena" type="password" formControlName="contrasena"
+                 autocomplete="new-password" [class.invalido]="invalido('contrasena')">
+          @if (invalido('contrasena')) {
+            <span class="campo-error">Entre 6 y 72 caracteres</span>
+          }
+        </div>
+
+        <div class="campo">
+          <label for="confirmar">Confirmar contraseña</label>
+          <input id="confirmar" type="password" formControlName="confirmar"
+                 autocomplete="new-password"
+                 [class.invalido]="invalido('confirmar') || noCoinciden()">
+          @if (noCoinciden()) {
+            <span class="campo-error">Las contraseñas no coinciden</span>
+          }
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primario btn-bloque" [disabled]="cargando()">
+        {{ cargando() ? 'Creando cuenta...' : 'Crear cuenta' }}
+      </button>
+    </form>
+
+    <p class="auth-pie">¿Ya tienes cuenta? <a routerLink="/login">Inicia sesión</a></p>
+  </section>
+</main>

@@ -1,0 +1,83 @@
+<div class="encabezado-pagina">
+  <h2>Historial médico</h2>
+  @if (!mostrandoForm()) {
+    <button type="button" class="btn btn-primario btn-chico" (click)="nuevo()">+ Agregar registro</button>
+  }
+</div>
+
+@if (error()) { <div class="alerta alerta-error">{{ error() }}</div> }
+
+@if (mostrandoForm()) {
+  <form class="panel-form" [formGroup]="form" (ngSubmit)="guardar()" novalidate>
+    <div class="dos-col">
+      <div class="campo">
+        <label for="h-fecha">Fecha *</label>
+        <input id="h-fecha" type="date" formControlName="fecha" [max]="hoy"
+               [class.invalido]="form.controls.fecha.invalid && form.controls.fecha.touched">
+      </div>
+
+      <div class="campo">
+        <label for="h-vet">Veterinario</label>
+        <select id="h-vet" formControlName="id_veterinario">
+          <option [ngValue]="null">Sin especificar</option>
+          @for (v of veterinarios(); track v.id_veterinario) {
+            <option [ngValue]="v.id_veterinario">{{ v.nombre }} {{ v.apellido }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <div class="campo">
+      <label for="h-diag">Diagnóstico</label>
+      <textarea id="h-diag" rows="2" formControlName="diagnostico"></textarea>
+    </div>
+
+    <div class="campo">
+      <label for="h-trat">Tratamiento</label>
+      <textarea id="h-trat" rows="2" formControlName="tratamiento"></textarea>
+    </div>
+
+    <div class="dos-col">
+      <div class="campo">
+        <label for="h-peso">Peso (kg)</label>
+        <input id="h-peso" type="number" step="0.01" min="0" formControlName="peso_kg"
+               [class.invalido]="form.controls.peso_kg.invalid && form.controls.peso_kg.touched">
+      </div>
+
+      <div class="campo">
+        <label for="h-obs">Observaciones</label>
+        <input id="h-obs" type="text" formControlName="observaciones">
+      </div>
+    </div>
+
+    <div class="fila-acciones">
+      <button type="submit" class="btn btn-primario btn-chico" [disabled]="guardando()">
+        {{ guardando() ? 'Guardando...' : 'Guardar' }}
+      </button>
+      <button type="button" class="btn btn-secundario btn-chico" (click)="cancelar()">Cancelar</button>
+    </div>
+  </form>
+}
+
+@if (cargando()) {
+  <p class="cargando">Cargando...</p>
+} @else {
+  @for (h of registros(); track h.id_historial) {
+    <article class="item-lista">
+      <div class="item-cab">
+        <strong>{{ h.fecha | date: 'dd/MM/yyyy' }}</strong>
+        <span class="texto-suave">{{ nombreVet(h.id_veterinario) }}</span>
+      </div>
+      @if (h.diagnostico) { <p><strong>Diagnóstico:</strong> {{ h.diagnostico }}</p> }
+      @if (h.tratamiento) { <p><strong>Tratamiento:</strong> {{ h.tratamiento }}</p> }
+      @if (h.peso_kg !== null) { <p><strong>Peso:</strong> {{ h.peso_kg }} kg</p> }
+      @if (h.observaciones) { <p class="texto-suave">{{ h.observaciones }}</p> }
+      <div class="fila-acciones">
+        <button type="button" class="btn btn-secundario btn-chico" (click)="editar(h)">Editar</button>
+        <button type="button" class="btn btn-peligro-suave btn-chico" (click)="eliminar(h)">Eliminar</button>
+      </div>
+    </article>
+  } @empty {
+    <p class="vacio">Esta mascota aún no tiene registros médicos.</p>
+  }
+}

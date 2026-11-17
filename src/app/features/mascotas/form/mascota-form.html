@@ -1,0 +1,84 @@
+<a routerLink="/mascotas" class="migas">← Volver a mis mascotas</a>
+
+<section class="tarjeta">
+  <h1>{{ idMascota === null ? 'Nueva mascota' : 'Editar mascota' }}</h1>
+
+  @if (error()) { <div class="alerta alerta-error">{{ error() }}</div> }
+
+  @if (cargando()) {
+    <p class="cargando">Cargando...</p>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="guardar()" novalidate>
+      <div class="dos-col">
+        <div class="campo">
+          <label for="nombre">Nombre *</label>
+          <input id="nombre" type="text" formControlName="nombre" [class.invalido]="invalido('nombre')">
+          @if (invalido('nombre')) { <span class="campo-error">El nombre es obligatorio</span> }
+        </div>
+
+        <div class="campo">
+          <label for="especie">Especie *</label>
+          <input id="especie" type="text" formControlName="especie" list="lista-especies"
+                 [class.invalido]="invalido('especie')">
+          <datalist id="lista-especies">
+            @for (e of especies; track e) { <option [value]="e"></option> }
+          </datalist>
+          @if (invalido('especie')) { <span class="campo-error">La especie es obligatoria</span> }
+        </div>
+      </div>
+
+      <div class="dos-col">
+        <div class="campo">
+          <label for="raza">Raza</label>
+          <input id="raza" type="text" formControlName="raza">
+        </div>
+
+        <div class="campo">
+          <label for="sexo">Sexo</label>
+          <input id="sexo" type="text" formControlName="sexo" list="lista-sexos">
+          <datalist id="lista-sexos">
+            <option value="Macho"></option>
+            <option value="Hembra"></option>
+          </datalist>
+        </div>
+      </div>
+
+      <div class="dos-col">
+        <div class="campo">
+          <label for="nacimiento">Fecha de nacimiento</label>
+          <input id="nacimiento" type="date" formControlName="fecha_nacimiento" [max]="hoy">
+        </div>
+
+        <div class="campo">
+          <label for="peso">Peso (kg)</label>
+          <input id="peso" type="number" step="0.01" min="0" formControlName="peso_kg"
+                 [class.invalido]="invalido('peso_kg')">
+          @if (invalido('peso_kg')) { <span class="campo-error">Ingresa un peso entre 0 y 999</span> }
+        </div>
+      </div>
+
+      <div class="campo">
+        <label for="color">Color</label>
+        <input id="color" type="text" formControlName="color">
+      </div>
+
+      <div class="campo">
+        <label for="foto">URL de la foto</label>
+        <input id="foto" type="url" formControlName="foto_url" placeholder="https://...">
+        <span class="campo-ayuda">Opcional. Pega el enlace de una imagen.</span>
+      </div>
+
+      <div class="campo campo-check">
+        <input id="esterilizado" type="checkbox" formControlName="esterilizado">
+        <label for="esterilizado">Esterilizado</label>
+      </div>
+
+      <div class="fila-acciones">
+        <button type="submit" class="btn btn-primario" [disabled]="guardando()">
+          {{ guardando() ? 'Guardando...' : 'Guardar' }}
+        </button>
+        <a routerLink="/mascotas" class="btn btn-secundario">Cancelar</a>
+      </div>
+    </form>
+  }
+</section>

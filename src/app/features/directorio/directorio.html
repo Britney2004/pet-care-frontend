@@ -1,0 +1,43 @@
+<div class="encabezado-pagina">
+  <h1>Clínicas veterinarias</h1>
+</div>
+
+@if (error()) { <div class="alerta alerta-error">{{ error() }}</div> }
+
+@if (cargando()) {
+  <p class="cargando">Cargando...</p>
+} @else {
+  <div class="filtros">
+    <div class="campo">
+      <label for="buscar">Buscar por nombre o ciudad</label>
+      <input id="buscar" type="search" #caja (input)="busqueda.set(caja.value)">
+    </div>
+  </div>
+
+  <div class="rejilla" style="grid-template-columns: repeat(auto-fill, minmax(320px, 1fr))">
+    @for (c of filtradas(); track c.id_clinica) {
+      <article class="tarjeta">
+        <h3>🏥 {{ c.nombre }}</h3>
+        <p class="texto-suave">
+          {{ c.direccion ?? 'Dirección no registrada' }}@if (c.ciudad) { · {{ c.ciudad }} }
+          @if (c.telefono) { <br>📞 {{ c.telefono }} }
+        </p>
+
+        <h3 style="font-size: 1rem; margin-top: 1rem">Veterinarios</h3>
+        @for (v of vetsDe(c.id_clinica); track v.id_veterinario) {
+          <div class="item-lista">
+            <strong>{{ v.nombre }} {{ v.apellido }}</strong>
+            @if (v.especialidad) { <span class="badge">{{ v.especialidad }}</span> }
+            @if (v.telefono || v.email) {
+              <p class="texto-suave">{{ v.telefono }}@if (v.telefono && v.email) { · }{{ v.email }}</p>
+            }
+          </div>
+        } @empty {
+          <p class="texto-suave">Sin veterinarios registrados.</p>
+        }
+      </article>
+    } @empty {
+      <div class="tarjeta vacio"><p>No hay clínicas para mostrar.</p></div>
+    }
+  </div>
+}

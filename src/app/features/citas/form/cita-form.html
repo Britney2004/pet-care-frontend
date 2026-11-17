@@ -1,0 +1,60 @@
+<a routerLink="/citas" class="migas">← Volver a mis citas</a>
+
+<section class="tarjeta">
+  <h1>{{ idCita === null ? 'Agendar cita' : 'Reprogramar cita' }}</h1>
+
+  @if (error()) { <div class="alerta alerta-error">{{ error() }}</div> }
+
+  @if (cargando()) {
+    <p class="cargando">Cargando...</p>
+  } @else if (idCita === null && mascotas().length === 0) {
+    <div class="vacio">
+      <p>Necesitas registrar una mascota antes de agendar una cita.</p>
+      <a routerLink="/mascotas/nueva" class="btn btn-primario">Registrar mascota</a>
+    </div>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="guardar()" novalidate>
+      <div class="campo">
+        <label for="mascota">Mascota *</label>
+        <select id="mascota" formControlName="id_mascota" [class.invalido]="invalido('id_mascota')">
+          <option [ngValue]="null">Selecciona una mascota</option>
+          @for (m of mascotas(); track m.id_mascota) {
+            <option [ngValue]="m.id_mascota">{{ m.nombre }} ({{ m.especie }})</option>
+          }
+        </select>
+        @if (invalido('id_mascota')) { <span class="campo-error">Selecciona una mascota</span> }
+      </div>
+
+      <div class="campo">
+        <label for="vet">Veterinario</label>
+        <select id="vet" formControlName="id_veterinario">
+          <option [ngValue]="null">Sin preferencia</option>
+          @for (v of veterinarios(); track v.id_veterinario) {
+            <option [ngValue]="v.id_veterinario">
+              {{ v.nombre }} {{ v.apellido }}@if (v.especialidad) { · {{ v.especialidad }} }@if (nombreClinica(v.id_clinica)) { — {{ nombreClinica(v.id_clinica) }} }
+            </option>
+          }
+        </select>
+      </div>
+
+      <div class="campo">
+        <label for="fecha">Fecha y hora *</label>
+        <input id="fecha" type="datetime-local" formControlName="fecha_hora" [min]="minimo"
+               [class.invalido]="invalido('fecha_hora')">
+        @if (invalido('fecha_hora')) { <span class="campo-error">Elige la fecha y la hora</span> }
+      </div>
+
+      <div class="campo">
+        <label for="motivo">Motivo de la consulta</label>
+        <textarea id="motivo" rows="3" formControlName="motivo"></textarea>
+      </div>
+
+      <div class="fila-acciones">
+        <button type="submit" class="btn btn-primario" [disabled]="guardando()">
+          {{ guardando() ? 'Guardando...' : (idCita === null ? 'Agendar' : 'Guardar cambios') }}
+        </button>
+        <a routerLink="/citas" class="btn btn-secundario">Cancelar</a>
+      </div>
+    </form>
+  }
+</section>

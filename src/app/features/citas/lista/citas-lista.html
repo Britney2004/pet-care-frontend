@@ -1,0 +1,61 @@
+<div class="encabezado-pagina">
+  <h1>Mis citas</h1>
+  <a routerLink="/citas/nueva" class="btn btn-primario">+ Agendar cita</a>
+</div>
+
+@if (error()) { <div class="alerta alerta-error">{{ error() }}</div> }
+
+@if (cargando()) {
+  <p class="cargando">Cargando...</p>
+} @else {
+  <div class="filtros">
+    <div class="campo">
+      <label for="f-estado">Estado</label>
+      <select id="f-estado" #selEstado (change)="filtroEstado.set(selEstado.value)">
+        <option value="">Todos</option>
+        <option value="pendiente">Pendiente</option>
+        <option value="confirmada">Confirmada</option>
+        <option value="completada">Completada</option>
+        <option value="cancelada">Cancelada</option>
+      </select>
+    </div>
+
+    <div class="campo">
+      <label for="f-mascota">Mascota</label>
+      <select id="f-mascota" #selMascota (change)="filtroMascota.set(+selMascota.value)">
+        <option value="0">Todas</option>
+        @for (m of mascotas(); track m.id_mascota) {
+          <option [value]="m.id_mascota">{{ m.nombre }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  @for (c of filtradas(); track c.id_cita) {
+    <article class="item-lista">
+      <div class="item-cab">
+        <strong>{{ c.fecha_hora | date: 'dd/MM/yyyy HH:mm' }} · {{ nombreMascota(c.id_mascota) }}</strong>
+        <span class="badge badge-{{ c.estado }}">{{ c.estado }}</span>
+      </div>
+      <p class="texto-suave">{{ nombreVet(c.id_veterinario) }}</p>
+      @if (c.motivo) { <p>{{ c.motivo }}</p> }
+
+      <div class="fila-acciones">
+        @if (esActiva(c)) {
+          <a [routerLink]="['/citas', c.id_cita, 'editar']" class="btn btn-secundario btn-chico">Reprogramar</a>
+          <button type="button" class="btn btn-peligro-suave btn-chico" (click)="cancelar(c)">Cancelar cita</button>
+        }
+        <button type="button" class="btn btn-peligro-suave btn-chico" (click)="eliminar(c)">Eliminar</button>
+      </div>
+    </article>
+  } @empty {
+    <div class="tarjeta vacio">
+      @if (citas().length === 0) {
+        <p>Aún no tienes citas agendadas.</p>
+        <a routerLink="/citas/nueva" class="btn btn-primario">Agendar la primera</a>
+      } @else {
+        <p>No hay citas con esos filtros.</p>
+      }
+    </div>
+  }
+}

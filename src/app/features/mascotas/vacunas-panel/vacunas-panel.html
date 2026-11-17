@@ -1,0 +1,90 @@
+<div class="encabezado-pagina">
+  <h2>Vacunas</h2>
+  @if (!mostrandoForm()) {
+    <button type="button" class="btn btn-primario btn-chico" (click)="nueva()">+ Agregar vacuna</button>
+  }
+</div>
+
+@if (error()) { <div class="alerta alerta-error">{{ error() }}</div> }
+
+@if (mostrandoForm()) {
+  <form class="panel-form" [formGroup]="form" (ngSubmit)="guardar()" novalidate>
+    <div class="campo">
+      <label for="v-nombre">Nombre de la vacuna *</label>
+      <input id="v-nombre" type="text" formControlName="nombre_vacuna"
+             [class.invalido]="form.controls.nombre_vacuna.invalid && form.controls.nombre_vacuna.touched">
+      @if (form.controls.nombre_vacuna.invalid && form.controls.nombre_vacuna.touched) {
+        <span class="campo-error">El nombre es obligatorio</span>
+      }
+    </div>
+
+    <div class="dos-col">
+      <div class="campo">
+        <label for="v-fecha">Fecha de aplicación *</label>
+        <input id="v-fecha" type="date" formControlName="fecha_aplicacion" [max]="hoy"
+               [class.invalido]="form.controls.fecha_aplicacion.invalid && form.controls.fecha_aplicacion.touched">
+      </div>
+
+      <div class="campo">
+        <label for="v-prox">Próxima dosis</label>
+        <input id="v-prox" type="date" formControlName="fecha_proxima_dosis">
+      </div>
+    </div>
+
+    <div class="dos-col">
+      <div class="campo">
+        <label for="v-vet">Veterinario</label>
+        <select id="v-vet" formControlName="id_veterinario">
+          <option [ngValue]="null">Sin especificar</option>
+          @for (v of veterinarios(); track v.id_veterinario) {
+            <option [ngValue]="v.id_veterinario">{{ v.nombre }} {{ v.apellido }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="campo">
+        <label for="v-lote">Lote</label>
+        <input id="v-lote" type="text" formControlName="lote">
+      </div>
+    </div>
+
+    <div class="fila-acciones">
+      <button type="submit" class="btn btn-primario btn-chico" [disabled]="guardando()">
+        {{ guardando() ? 'Guardando...' : 'Guardar' }}
+      </button>
+      <button type="button" class="btn btn-secundario btn-chico" (click)="cancelar()">Cancelar</button>
+    </div>
+  </form>
+}
+
+@if (cargando()) {
+  <p class="cargando">Cargando...</p>
+} @else {
+  @for (v of vacunas(); track v.id_vacuna) {
+    <article class="item-lista">
+      <div class="item-cab">
+        <strong>{{ v.nombre_vacuna }}</strong>
+        <span class="texto-suave">Aplicada el {{ v.fecha_aplicacion | date: 'dd/MM/yyyy' }}</span>
+      </div>
+
+      @if (v.fecha_proxima_dosis) {
+        <p>
+          Próxima dosis: {{ v.fecha_proxima_dosis | date: 'dd/MM/yyyy' }}
+          @if (estadoRefuerzo(v) === 'vencida') {
+            <span class="badge badge-cancelada">Vencida</span>
+          } @else if (estadoRefuerzo(v) === 'pronto') {
+            <span class="badge badge-pendiente">Próxima</span>
+          }
+        </p>
+      }
+      <p class="texto-suave">{{ nombreVet(v.id_veterinario) }}@if (v.lote) { · Lote {{ v.lote }} }</p>
+
+      <div class="fila-acciones">
+        <button type="button" class="btn btn-secundario btn-chico" (click)="editar(v)">Editar</button>
+        <button type="button" class="btn btn-peligro-suave btn-chico" (click)="eliminar(v)">Eliminar</button>
+      </div>
+    </article>
+  } @empty {
+    <p class="vacio">Esta mascota aún no tiene vacunas registradas.</p>
+  }
+}
