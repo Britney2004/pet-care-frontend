@@ -1,0 +1,17 @@
+# Front de PeludOS. Requiere que el back ya esté corriendo:
+#   cd ../pet-care-backend && docker compose up -d
+services:
+  front:
+    build: .
+    container_name: peludos_front
+    ports:
+      - "4200:80"
+    networks:
+      - peludos
+
+networks:
+  peludos:
+    external: true
+    # Red que crea el docker-compose del back (nombre de su carpeta + _default).
+    # Compruébala con: docker network ls
+    name: pet-care-backend_default
